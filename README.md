@@ -87,6 +87,27 @@ AgentKit is a thinking and making tool that helps you:
 - `/implement` - Execute and create
 - `agentkit upgrade` - Upgrade the CLI (pip-based; use `--use-git` for GitHub source)
 
+## Workflow (Mermaid)
+
+```mermaid
+flowchart LR
+    A[Intake: User Idea/Request] --> B[/specify: Capture What/Why → spec.md/]
+    B --> C{Need clarifications?}
+    C -- Yes --> D[/clarify: Ask critical questions/]
+    C -- No --> E[/research: Log open questions → research.md/]
+    D --> E
+    E --> F[/checklist: Validate spec quality → checklists/requirements.md/]
+    F --> G[/plan: Define how/when → plan.md/]
+    G --> H[/tasks: Break into trackable tasks → tasks.md/]
+    H --> I[/implement: Execute tasks, build assets/]
+    I --> J{Done?}
+    J -- No (iterate) --> E
+    J -- Yes --> K[Deliverables/Review/Signoff]
+    K --> L{Feedback?}
+    L -- Yes --> E
+    L -- No --> M[Complete]
+```
+
 Helper scripts (in `.agentkit/scripts/<shell>/`):
 - `create-new-idea` – scaffold a new idea workspace
 - `setup-plan` – refresh plan/tasks/research/asset-map/quickstart/checklist
