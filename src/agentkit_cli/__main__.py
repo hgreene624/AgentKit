@@ -8,6 +8,7 @@ structured workflows with AI agents.
 
 import sys
 import argparse
+import subprocess
 from pathlib import Path
 
 # Import version from package
@@ -89,6 +90,22 @@ def main():
         "check",
         help="Check for installed AI agents and prerequisites"
     )
+
+    # agentkit upgrade command
+    upgrade_parser = subparsers.add_parser(
+        "upgrade",
+        help="Upgrade AgentKit CLI to latest (pip-based)"
+    )
+    upgrade_parser.add_argument(
+        "--source",
+        default="agentkit-cli",
+        help="Package or URL to install (default: agentkit-cli)"
+    )
+    upgrade_parser.add_argument(
+        "--use-git",
+        action="store_true",
+        help="Use git source https://github.com/hgreene624/AgentKit.git"
+    )
     
     # Parse arguments
     args = parser.parse_args()
@@ -107,6 +124,19 @@ def main():
     elif args.command == "check":
         from agentkit_cli.check import check_environment
         return check_environment(args)
+    elif args.command == "upgrade":
+        target = args.source
+        if args.use_git:
+            target = "git+https://github.com/hgreene624/AgentKit.git"
+        cmd = [sys.executable, "-m", "pip", "install", "--upgrade", target]
+        try:
+            print(f"Upgrading AgentKit via: {' '.join(cmd)}")
+            subprocess.run(cmd, check=True)
+            print("Upgrade completed.")
+            return 0
+        except subprocess.CalledProcessError as exc:
+            print(f"Upgrade failed: {exc}")
+            return 1
     
     return 0
 

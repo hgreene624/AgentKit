@@ -85,6 +85,7 @@ AgentKit is a thinking and making tool that helps you:
 - `/task` - Break down into actions
 - `/implement` - Execute and create
 - `/checklist` - Validate requirement quality
+- `agentkit upgrade` - Upgrade the CLI (pip-based; use `--use-git` for GitHub source)
 
 Helper scripts (in `.agentkit/scripts/<shell>/`):
 - `create-new-idea` – scaffold a new idea workspace
