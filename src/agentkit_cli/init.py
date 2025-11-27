@@ -390,6 +390,13 @@ def create_scripts(project_dir: Path, script_type: str):
     if script_type == "bash":
         tasks_issues_json_file.chmod(0o755)
 
+    # Tasks to GitHub push helper
+    tasks_issues_push_script = get_tasks_to_github_push_script(script_type)
+    tasks_issues_push_file = script_dir / f"tasks-to-github-push{ext}"
+    tasks_issues_push_file.write_text(tasks_issues_push_script)
+    if script_type == "bash":
+        tasks_issues_push_file.chmod(0o755)
+
     # Template propagation helper (flag/copy)
     template_sync_script = get_template_sync_script(script_type)
     template_sync_file = script_dir / f"template-sync{ext}"
@@ -1605,6 +1612,14 @@ def get_constitution_sync_script(script_type: str) -> str:
 
 SRC="constitution.md"
 DEST=".agentkit/memory/constitution.md"
+APPLY_TEMPLATES=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --apply-templates) APPLY_TEMPLATES=true ;;
+  esac
+  shift
+done
 
 if [ ! -f "$SRC" ]; then
     echo "constitution.md not found" >&2
@@ -1632,6 +1647,14 @@ fi
 
 cp "$SRC" "$DEST"
 echo "Synced constitution to $DEST"
+
+if $APPLY_TEMPLATES; then
+    if [ -x ".agentkit/scripts/bash/template-sync.sh" ]; then
+        .agentkit/scripts/bash/template-sync.sh --apply
+    else
+        echo "template-sync.sh not found or not executable; skipping template sync"
+    fi
+fi
 """
     else:
         return """# PowerShell script
@@ -1639,6 +1662,11 @@ echo "Synced constitution to $DEST"
 
 $src = "constitution.md"
 $dest = ".agentkit/memory/constitution.md"
+$ApplyTemplates = $false
+
+param(
+    [switch]$ApplyTemplates
+)
 
 if (!(Test-Path $src)) {
     Write-Error "constitution.md not found"
@@ -1665,6 +1693,15 @@ if (-not ($content -match "Sync Impact Report")) {
 
 Copy-Item $src $dest -Force
 Write-Host "Synced constitution to $dest"
+
+if ($ApplyTemplates) {
+    $templateSync = ".agentkit/scripts/powershell/template-sync.ps1"
+    if (Test-Path $templateSync) {
+        & $templateSync --Apply
+    } else {
+        Write-Host "template-sync.ps1 not found; skipping template sync"
+    }
+}
 """
 
 
@@ -1952,6 +1989,67 @@ Get-Content $Input | ForEach-Object {
 
 $lines | Out-File -FilePath $Output -Encoding utf8
 Write-Host "Generated GitHub issue commands in $Output (review before running)"
+"""
+
+
+def get_tasks_to_github_push_script(script_type: str) -> str:
+    """Return helper to create GitHub issues directly via gh CLI"""
+    if script_type == "bash":
+        return """#!/usr/bin/env bash
+# Create GitHub issues from tasks.md using gh CLI.
+
+INPUT=${1:-tasks.md}
+LABELS=${2:-task}
+
+if [ ! -f "$INPUT" ]; then
+    echo "Input tasks file not found: $INPUT" >&2
+    exit 1
+fi
+
+if ! command -v gh >/dev/null 2>&1; then
+    echo "gh CLI not found; install GitHub CLI first." >&2
+    exit 1
+fi
+
+while IFS= read -r line; do
+    if [[ "$line" =~ ^-\\ \\[[\\ x]\\] ]]; then
+        status=$(echo "$line" | grep -q "\\[x\\]" && echo "done" || echo "open")
+        clean=${line#*- [x] }
+        clean=${clean#*- [ ] }
+        title=${clean//\"/\\\"}
+        body="Status: $status"
+        gh issue create --title "$title" --body "$body" --label "$LABELS"
+    fi
+done < "$INPUT"
+"""
+    else:
+        return """# PowerShell script
+# Create GitHub issues from tasks.md using gh CLI.
+
+param(
+    [string]$Input = "tasks.md",
+    [string]$Labels = "task"
+)
+
+if (!(Test-Path $Input)) {
+    Write-Error "Input tasks file not found: $Input"
+    exit 1
+}
+
+if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+    Write-Error "gh CLI not found; install GitHub CLI first."
+    exit 1
+}
+
+Get-Content $Input | ForEach-Object {
+    if ($_ -match '^- \\[[ x]\\]') {
+        $status = ($_ -match '^- \\[x\\]') ? "done" : "open"
+        $clean = $_ -replace '^- \\[[ x]\\] *', ''
+        $title = $clean -replace '\"','\"\"'
+        $body = "Status: $status"
+        gh issue create --title "$title" --body "$body" --label "$Labels"
+    }
+}
 """
 
 def get_constitution_command() -> str:

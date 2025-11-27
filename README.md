@@ -97,6 +97,7 @@ Helper scripts (in `.agentkit/scripts/<shell>/`):
 - `constitution-sync` – ensure Sync Impact Report header and copy constitution to `.agentkit/memory/constitution.md`
 - `tasks-to-issues` / `tasks-to-issues-json` – export tasks to CSV/JSON for trackers
 - `template-sync` – dry-run or apply template/command updates within the project
+- `tasks-to-github` / `tasks-to-github-push` – generate gh commands or push issues via gh CLI
 
 ---
 
