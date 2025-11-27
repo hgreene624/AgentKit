@@ -15,7 +15,7 @@ try:
     from agentkit_cli import __version__
     VERSION = __version__
 except ImportError:
-    VERSION = "0.1.0"
+    VERSION = "0.2.0"
 
 def main():
     """Main CLI entry point"""
@@ -64,6 +64,25 @@ def main():
         action="store_true",
         help="Force initialization even if directory is not empty"
     )
+
+    # agentkit idea command
+    idea_parser = subparsers.add_parser(
+        "idea",
+        help="Create a new idea workspace inside an AgentKit project"
+    )
+    idea_parser.add_argument(
+        "name",
+        help="Idea name or title"
+    )
+    idea_parser.add_argument(
+        "--slug",
+        help="Optional slug override for the idea directory name"
+    )
+    idea_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing idea directory if it exists"
+    )
     
     # agentkit check command
     check_parser = subparsers.add_parser(
@@ -82,6 +101,9 @@ def main():
     if args.command == "init":
         from agentkit_cli.init import init_project
         return init_project(args)
+    elif args.command == "idea":
+        from agentkit_cli.init import create_idea_workspace
+        return create_idea_workspace(args)
     elif args.command == "check":
         from agentkit_cli.check import check_environment
         return check_environment(args)

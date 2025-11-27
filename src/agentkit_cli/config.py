@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any
 import json
 
 # Package metadata
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 PACKAGE_NAME = "agentkit-cli"
 
 # Default paths
@@ -256,7 +256,7 @@ class ProjectPaths:
     
     def idea_spec(self, idea_name: str) -> Path:
         """Get path to idea specification"""
-        return self.idea_dir(idea_name) / "specification.md"
+        return self.idea_dir(idea_name) / "spec.md"
     
     def idea_plan(self, idea_name: str) -> Path:
         """Get path to idea plan"""

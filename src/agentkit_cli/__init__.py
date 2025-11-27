@@ -6,7 +6,7 @@ structured workflows with AI coding agents.
 """
 
 __version__ = "0.2.0"
-__author__ = "Holden Greene"
+__author__ = "AgentKit Maintainers"
 __license__ = "MIT"
 
 from .config import (

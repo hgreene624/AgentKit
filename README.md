@@ -53,6 +53,14 @@ claude  # or code/cursor/gemini
 /implement       # Execute and create
 ```
 
+### Create an Idea Workspace
+
+```bash
+agentkit idea "My first idea"
+```
+
+Creates `.agentkit/ideas/001-my-first-idea/` populated with spec, plan, and tasks files.
+
 ---
 
 ## What is AgentKit?
@@ -140,6 +148,7 @@ AgentKit treats the AI agent as a **creative thinking partner**, not just a code
 ## Documentation
 
 - **Installation Guide**: See `INSTALL.md`
+- **Contributor Guide**: See `AGENTS.md`
 - **Examples**: Coming soon
 - **Command Reference**: In `.agentkit/` command files
 

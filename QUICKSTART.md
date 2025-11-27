@@ -1,71 +1,64 @@
 # AgentKit Quick Start
 
-## 3-Minute Setup
+## Zero-to-Project from GitHub (3–5 minutes)
 
 ```bash
-# 1. Navigate to AgentKit
-cd /Users/holden/Documents/AgentKit
+# 1) Install AgentKit from GitHub (pick one)
+# Recommended: UV (fast)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv tool install git+https://github.com/hgreene624/agentkit.git
 
-# 2. Install
-pip install rich requests
-pip install -e .
+# Or: pip
+pip install git+https://github.com/hgreene624/agentkit.git
 
-# 3. Test it
+# 2) Verify the CLI
+agentkit --version
 agentkit check
 
-# 4. Create project
-agentkit init test-project --ai claude
+# 3) Create a new project (in your current directory)
+agentkit init my-idea --ai claude  # supports claude/copilot/cursor/gemini
+cd my-idea
 
-# 5. Start working
-cd test-project
-nano .agentkit/memory/constitution.md
-claude
+# 4) Create your first idea workspace
+agentkit idea "My first idea"
+ls .agentkit/ideas
+
+# 5) Open constitution or start your agent
+nano constitution.md   # or use your editor
+claude                 # then run workflow commands below
 ```
 
-## Workflow
-
-Once your AI agent is running:
+## Workflow Commands (inside your AI agent)
 
 ```
-/specify [describe your idea]
-/clarify [answer questions to sharpen it]
-/plan [define the approach]
-/task [break it down]
-/implement [make it real]
+/constitution   Set/adjust principles
+/specify        Capture the idea
+/clarify        Answer prompts to sharpen it
+/plan           Turn the spec into a plan
+/task           Break plan into tasks
+/implement      Execute and create
 ```
 
-## Example
+## Example Flow
 
 ```
-/specify
-Build an n8n workflow to automate text message responses
-for business hours and location questions. Should feel
-personal, not robotic.
-
-/clarify
-[Agent asks questions about triggers, tone, edge cases]
-
-/plan
-Use n8n + Twilio. Keyword detection. Template responses
-with variables. Test mode before live.
-
-/task
-[Agent breaks into A/U/M/H tasks]
-
-/implement
-[Agent executes, asks for input when needed]
+/specify Build an n8n workflow to automate SMS replies for hours/location.
+/clarify [Agent asks about tone, triggers, edge cases...]
+/plan Use n8n + Twilio; keyword routing; test mode first.
+/task [Agent outputs categorized tasks]
+/implement [Agent executes tasks and requests inputs]
 ```
 
-## File Structure
+## Project Layout
 
 ```
-Your Project/
+my-idea/
 └── .agentkit/
     ├── memory/
-    │   └── constitution.md    ← Edit this first!
+    │   └── constitution.md
     ├── ideas/
-    │   └── 001-your-idea/
-    │       ├── specification.md
+    │   └── 001-my-first-idea/
+    │       ├── spec.md
     │       ├── plan.md
     │       ├── tasks.md
     │       └── outputs/
@@ -74,11 +67,9 @@ Your Project/
 
 ## Need Help?
 
-- `agentkit --help` - Show commands
-- `agentkit check` - Verify environment
-- See `README.md` for full docs
-- See `INSTALL.md` for troubleshooting
+- `agentkit --help` — show commands
+- `agentkit check` — verify environment
+- `README.md` — concepts and workflow
+- `INSTALL.md` — troubleshooting and install options
 
----
-
-**That's it! You're ready to create.** 🚀
+**You're ready to create.** 🚀

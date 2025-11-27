@@ -64,7 +64,7 @@ agentkit check
 
 You should see:
 ```
-AgentKit v0.1.0
+AgentKit v0.2.0
 ```
 
 ### 3. Create Your First Project
@@ -75,7 +75,14 @@ agentkit init test-project --ai claude
 cd test-project
 ```
 
-### 4. Explore the Structure
+### 4. Create an Idea Workspace
+
+```bash
+agentkit idea "My first idea"
+ls .agentkit/ideas/
+```
+
+### 5. Explore the Structure
 
 ```bash
 # See what was created
@@ -83,20 +90,20 @@ ls -la .agentkit/
 cat .agentkit/memory/constitution.md
 ```
 
-### 5. Edit Your Constitution
+### 6. Edit Your Constitution
 
 ```bash
 nano .agentkit/memory/constitution.md
 # Add your creative principles, aesthetic, constraints, etc.
 ```
 
-### 6. Start Your AI Agent
+### 7. Start Your AI Agent
 
 ```bash
 claude  # or code/cursor/gemini
 ```
 
-### 7. Try the Workflow
+### 8. Try the Workflow
 
 In your AI agent:
 ```
@@ -179,6 +186,7 @@ agentkit check
 agentkit init demo-project --ai claude
 cd demo-project
 cat .agentkit/memory/constitution.md
+agentkit idea "Demo idea"
 
 # Start Claude
 claude

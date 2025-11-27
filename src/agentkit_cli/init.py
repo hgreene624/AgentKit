@@ -8,6 +8,7 @@ import shutil
 from pathlib import Path
 from typing import Optional
 
+from agentkit_cli.config import AgentKitConfig, ProjectPaths, ensure_directory
 from rich.console import Console
 from rich.prompt import Prompt, Confirm
 from rich.panel import Panel
@@ -117,6 +118,12 @@ def init_project(args) -> int:
         if script_type not in SCRIPT_CONFIG:
             console.print(f"[red]Error: Unknown script type '{script_type}'[/red]")
             return 1
+        
+        # Persist selected agent and script type for later commands
+        config = AgentKitConfig(project_dir)
+        config.ai_agent = ai_agent
+        config.script_type = script_type
+        config.save()
             
         # Create project structure
         with Progress(
@@ -227,6 +234,7 @@ def create_project_structure(project_dir: Path, ai_agent: str, script_type: str)
 
     # Memory directory
     (agentkit_dir / "memory").mkdir(parents=True, exist_ok=True)
+    (agentkit_dir / "ideas").mkdir(parents=True, exist_ok=True)
 
     # Scripts directory
     script_dir = agentkit_dir / "scripts" / script_type
@@ -272,6 +280,14 @@ def install_templates(project_dir: Path, ai_agent: str):
     (templates_dir / "tasks-template.md").write_text(tasks_template)
 
 
+def _read_template(path: Path, fallback) -> str:
+    """Load a template file with a callable fallback"""
+    try:
+        return path.read_text()
+    except FileNotFoundError:
+        return fallback()
+
+
 def create_scripts(project_dir: Path, script_type: str):
     """Create helper scripts"""
     
@@ -299,6 +315,69 @@ def create_scripts(project_dir: Path, script_type: str):
     setup_file.write_text(setup_plan_script)
     if script_type == "bash":
         setup_file.chmod(0o755)
+
+
+def create_idea_workspace(args) -> int:
+    """
+    Create a new idea directory with numbered slug and starter templates
+    """
+    project_dir = Path.cwd()
+    config = AgentKitConfig(project_dir)
+
+    if not config.is_initialized():
+        console.print("[red]Error: Not inside an AgentKit project[/red]")
+        return 1
+
+    try:
+        idea_number = config.get_next_idea_number()
+        slug_base = args.slug or args.name
+        slug = config.create_idea_slug(slug_base) if slug_base else ""
+        idea_name = f"{idea_number}-{slug}" if slug else idea_number
+
+        paths = ProjectPaths(project_dir)
+        idea_dir = paths.idea_dir(idea_name)
+
+        if idea_dir.exists() and not args.force:
+            console.print(f"[red]Idea directory already exists: {idea_dir}[/red]")
+            console.print("Use --force to overwrite existing files.")
+            return 1
+
+        ensure_directory(idea_dir)
+        ensure_directory(paths.idea_outputs(idea_name))
+
+        templates_dir = project_dir / ".agentkit" / "templates"
+        spec_template = _read_template(
+            templates_dir / "specification-template.md",
+            get_specification_template,
+        )
+        plan_template = _read_template(
+            templates_dir / "plan-template.md",
+            get_plan_template,
+        )
+        tasks_template = _read_template(
+            templates_dir / "tasks-template.md",
+            get_tasks_template,
+        )
+
+        paths.idea_spec(idea_name).write_text(spec_template)
+        paths.idea_plan(idea_name).write_text(plan_template)
+        paths.idea_tasks(idea_name).write_text(tasks_template)
+
+        console.print(Panel.fit(
+            f"[green]✓ Idea created[/green]\n\n"
+            f"Name: [cyan]{args.name}[/cyan]\n"
+            f"Directory: [blue]{idea_dir}[/blue]\n"
+            f"Files: spec.md, plan.md, tasks.md, outputs/",
+            title="New Idea",
+            border_style="green"
+        ))
+
+        return 0
+    except Exception as e:
+        console.print(f"[red]Error creating idea: {e}[/red]")
+        import traceback
+        traceback.print_exc()
+        return 1
 
 
 def setup_commands(project_dir: Path, ai_agent: str):
@@ -674,8 +753,10 @@ IDEA_NAME="${IDEA_NUM}-${IDEA_SLUG}"
 echo "Creating idea: $IDEA_NAME"
 IDEA_DIR=$(create_idea_dir "$IDEA_NAME")
 
-# Copy specification template
-cp .agentkit/templates/specification-template.md "$IDEA_DIR/specification.md"
+# Copy templates
+cp .agentkit/templates/specification-template.md "$IDEA_DIR/spec.md"
+cp .agentkit/templates/plan-template.md "$IDEA_DIR/plan.md"
+cp .agentkit/templates/tasks-template.md "$IDEA_DIR/tasks.md"
 
 echo "Idea created at: $IDEA_DIR"
 """
@@ -692,8 +773,10 @@ $ideaName = "$ideaNum-$ideaSlug"
 Write-Host "Creating idea: $ideaName"
 $ideaDir = New-IdeaDirectory $ideaName
 
-# Copy specification template
-Copy-Item .agentkit/templates/specification-template.md "$ideaDir/specification.md"
+# Copy templates
+Copy-Item .agentkit/templates/specification-template.md "$ideaDir/spec.md"
+Copy-Item .agentkit/templates/plan-template.md "$ideaDir/plan.md"
+Copy-Item .agentkit/templates/tasks-template.md "$ideaDir/tasks.md"
 
 Write-Host "Idea created at: $ideaDir"
 """
