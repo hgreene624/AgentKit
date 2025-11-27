@@ -35,6 +35,11 @@ TOOLS_TO_CHECK = {
         "required": False,
         "description": "VS Code (for Copilot)"
     },
+    "codex": {
+        "command": ["codex", "--version"],
+        "required": False,
+        "description": "Codex CLI"
+    },
     "cursor": {
         "command": ["cursor", "--version"],
         "required": False,

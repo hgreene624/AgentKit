@@ -115,6 +115,7 @@ Helper scripts (in `.agentkit/scripts/<shell>/`):
 
 - ✅ Claude Code (Anthropic)
 - ✅ GitHub Copilot (in VS Code)
+- ✅ Codex
 - ✅ Cursor
 - ✅ Gemini CLI (Google)
 

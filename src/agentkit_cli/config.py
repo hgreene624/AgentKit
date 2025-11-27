@@ -33,6 +33,13 @@ AGENT_CONFIG = {
         "check_command": "code --version",
         "docs_url": "https://github.com/features/copilot"
     },
+    "codex": {
+        "name": "Codex",
+        "command_dir": ".codex/commands",
+        "file_extension": ".md",
+        "check_command": "codex --version",
+        "docs_url": "https://openai.com/"
+    },
     "cursor": {
         "name": "Cursor",
         "command_dir": ".cursor/commands",

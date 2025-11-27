@@ -47,7 +47,7 @@ def main():
     )
     init_parser.add_argument(
         "--ai",
-        choices=["claude", "copilot", "cursor", "gemini"],
+        choices=["claude", "copilot", "codex", "cursor", "gemini"],
         help="AI agent to configure for"
     )
     init_parser.add_argument(

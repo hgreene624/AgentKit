@@ -30,6 +30,12 @@ AGENT_CONFIG = {
         "file_extension": ".md",
         "check_command": "code --version"
     },
+    "codex": {
+        "name": "Codex",
+        "command_dir": ".codex/commands",
+        "file_extension": ".md",
+        "check_command": "codex --version"
+    },
     "cursor": {
         "name": "Cursor",
         "command_dir": ".cursor/commands",
