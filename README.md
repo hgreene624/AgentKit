@@ -59,7 +59,7 @@ claude  # or code/cursor/gemini
 agentkit idea "My first idea"
 ```
 
-Creates `.agentkit/ideas/001-my-first-idea/` populated with spec, plan, and tasks files.
+Creates `.agentkit/ideas/001-my-first-idea/` populated with spec, plan, tasks, research, asset-map, quickstart, checklist, and briefs folders.
 
 ---
 
@@ -84,6 +84,18 @@ AgentKit is a thinking and making tool that helps you:
 - `/plan` - Define the approach
 - `/task` - Break down into actions
 - `/implement` - Execute and create
+- `/checklist` - Validate requirement quality
+
+Helper scripts (in `.agentkit/scripts/<shell>/`):
+- `create-new-idea` – scaffold a new idea workspace
+- `setup-plan` – refresh plan/tasks/research/asset-map/quickstart/checklist
+- `check-prerequisites` – validate required docs exist (JSON output)
+- `update-agent-context` – append notes/tech choices to `.claude/agent-context.md`
+- `suggest-name` – suggest next numbered idea/feature name (uses ideas dirs + git branches)
+- `tasks-export` – export tasks.md to CSV (id,status,description)
+- `constitution-sync` – ensure Sync Impact Report header and copy constitution to `.agentkit/memory/constitution.md`
+- `tasks-to-issues` / `tasks-to-issues-json` – export tasks to CSV/JSON for trackers
+- `template-sync` – dry-run or apply template/command updates within the project
 
 ---
 
@@ -114,16 +126,22 @@ After initialization:
 ```
 my-idea/
 ├── constitution.md          # Your creative principles
-├── spec.md                  # Project specification (after /specify)
-├── plan.md                  # Implementation plan (after /plan)
-├── tasks.md                 # Task breakdown (after /task)
+├── spec.md                  # Project specification (/specify)
+├── plan.md                  # Implementation plan (/plan)
+├── tasks.md                 # Task breakdown (/task)
+├── research.md              # Clarifications and decisions
+├── asset-map.md             # Assets/elements and relationships
+├── quickstart.md            # How to run/pilot/smoke-test the work
+├── checklists/requirements.md  # Spec/decision quality checklist
+├── briefs/                  # Standards/constraints per deliverable
 ├── deliverables/            # Your actual outputs
 ├── notes/                   # Additional documentation
-├── .agentkit/              # Internal (templates, scripts)
+├── .agentkit/              # Internal (templates, scripts, memory)
 └── .claude/                # Agent commands
     └── commands/
         ├── constitution.md
         ├── specify.md
+        ├── clarify.md
         ├── plan.md
         ├── task.md
         └── implement.md

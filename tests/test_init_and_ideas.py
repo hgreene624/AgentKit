@@ -23,6 +23,13 @@ def test_init_creates_structure_and_config(tmp_path, monkeypatch):
     assert (agentkit_dir / "memory").is_dir()
     assert (agentkit_dir / "ideas").is_dir()
     assert (agentkit_dir / "templates" / "specification-template.md").is_file()
+    assert (agentkit_dir / "templates" / "plan-template.md").is_file()
+    assert (agentkit_dir / "templates" / "tasks-template.md").is_file()
+    assert (agentkit_dir / "templates" / "research-template.md").is_file()
+    assert (agentkit_dir / "templates" / "asset-map-template.md").is_file()
+    assert (agentkit_dir / "templates" / "quickstart-template.md").is_file()
+    assert (agentkit_dir / "templates" / "checklist-template.md").is_file()
+    assert (agentkit_dir / "templates" / "constitution-template.md").is_file()
 
     config = AgentKitConfig(tmp_path)
     assert config.ai_agent == "claude"
@@ -48,6 +55,11 @@ def test_create_idea_workspace_numbers_and_slugs(tmp_path, monkeypatch):
     assert (first_dir / "spec.md").is_file()
     assert (first_dir / "plan.md").is_file()
     assert (first_dir / "tasks.md").is_file()
+    assert (first_dir / "research.md").is_file()
+    assert (first_dir / "asset-map.md").is_file()
+    assert (first_dir / "quickstart.md").is_file()
+    assert (first_dir / "checklists" / "requirements.md").is_file()
+    assert (first_dir / "briefs").is_dir()
 
     second_args = SimpleNamespace(name="Second Idea", slug="custom", force=False)
     assert create_idea_workspace(second_args) == 0
@@ -64,3 +76,24 @@ def test_create_idea_workspace_fails_without_project(tmp_path, monkeypatch):
 def test_check_version_comparisons():
     assert check_version("Python 3.11.1", "3.11") is True
     assert check_version("Python 3.10.9", "3.11") is False
+
+
+def test_spec_template_has_clear_boundary(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    args = SimpleNamespace(
+        ai="claude",
+        script="bash",
+        project_name=".",
+        here=True,
+        force=True,
+    )
+
+    assert init_project(args) == 0
+
+    template_path = tmp_path / ".agentkit" / "templates" / "specification-template.md"
+    spec_text = template_path.read_text()
+
+    assert "STOP: Do not add implementation details. Those belong in plan.md" in spec_text
+    assert "## Related Documents" in spec_text
+    assert "plan.md" in spec_text
+    assert "## Implementation Phases" not in spec_text
