@@ -522,6 +522,7 @@ def setup_commands(project_dir: Path, ai_agent: str):
         "task": get_task_command(),
         "implement": get_implement_command(),
         "checklist": get_checklist_command(),
+        "tasks-to-issues": get_tasks_to_issues_command(),
     }
     
     # Write command files
@@ -2228,4 +2229,24 @@ Steps:
 4) Ensure ≥80% of items include a traceability marker (Spec reference or Gap/Ambiguity); cite research/briefs when decisions depend on them.
 5) Include items for research quality: sources cited, decisions justified, confidence stated.
 6) Append new checklist items instead of overwriting user edits.
+"""
+
+
+def get_tasks_to_issues_command() -> str:
+    """Return /tasks-to-issues command content"""
+    return """# /tasks-to-issues - Turn Tasks into GitHub Issues
+
+Purpose: convert `tasks.md` into GitHub issues using MCP (or halt if not a GitHub remote).
+
+Outline:
+1) Run `.agentkit/scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks` (or PowerShell equivalent) to get FEATURE_DIR and TASKS path.
+2) Ensure git remote is GitHub:
+   - `git config --get remote.origin.url`
+   - If not a GitHub URL, STOP (do not create issues).
+3) For each task in tasks.md:
+   - Use GitHub MCP server `github/github-mcp-server/issue_write` to create an issue.
+   - Title = task line (include task ID if present), Body = status + any dependencies, Labels = `task`.
+4) Do not create issues in any repo other than the detected remote.
+
+If MCP not available, STOP and report that issues were not created.
 """
