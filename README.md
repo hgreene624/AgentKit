@@ -90,7 +90,7 @@ AgentKit is a thinking and making tool that helps you:
 ## Workflow (Mermaid)
 
 ```mermaid
-flowchart LR
+flowchart TB
     A[Intake: User Idea/Request] --> B[/specify: Capture What/Why → spec.md/]
     B --> C{Need clarifications?}
     C -- Yes --> D[/clarify: Ask critical questions/]
