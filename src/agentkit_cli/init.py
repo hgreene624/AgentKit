@@ -163,9 +163,9 @@ def init_project(args) -> int:
             f"[bold]Next Steps:[/bold]\n"
             f"1. cd {project_name if not args.here else '.'}\n"
             f"2. Run your AI agent (e.g., 'claude')\n"
-            f"3. Use /constitution to set up your principles\n"
-            f"4. Use /specify to start your first project\n"
-            f"5. Follow workflow: /plan → /task → /implement",
+            f"3. /specify (capture idea) → /clarify (optional) → /checklist\n"
+            f"4. /constitution (draft/refine principles) and sync\n"
+            f"5. /plan → /task → /implement",
             title="🎉 AgentKit Ready",
             border_style="green"
         ))
@@ -1980,6 +1980,7 @@ Workflow:
    - Update command prompts (constitution checks, gates).
    - Copy the updated constitution into `.agentkit/memory/constitution.md`.
    - Run `.agentkit/scripts/bash/template-sync.sh --apply` (or PowerShell equivalent) to copy updated templates/commands.
+   - Align `spec.md` scope/constraints/tone/acceptance with constitution changes (add TODOs if unresolved).
    - Record any manual follow-ups in the report as ⚠️ TODO.
 
 Quality gates:
@@ -2005,8 +2006,9 @@ Steps:
    - User stories with priorities and acceptance scenarios.
    - Mark unclear items with `[NEEDS CLARIFICATION: question]` (max 3).
 4) Identify the top 2–3 unknowns; log them in `research.md` (Open Questions) and propose [R] tasks for `/task`.
-5) Keep implementation out: if HOW/WHEN appears, park it as a note for `/plan`.
-6) Update `checklists/requirements.md` from the checklist template to validate spec quality.
+5) Draft preliminary constitution signals (principles/constraints/tone/safety) into `constitution.md` as TODO-marked entries if the template is still placeholder-only.
+6) Keep implementation out: if HOW/WHEN appears, park it as a note for `/plan`.
+7) Update `checklists/requirements.md` from the checklist template to validate spec quality.
 
 Quality gates:
 - At least one P1 user story with acceptance scenarios.
