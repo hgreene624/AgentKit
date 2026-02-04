@@ -10,23 +10,38 @@ Transform fuzzy ideas into concrete realities through structured workflows with 
 
 ### Installation
 
-**Option 1: pip (requires Python 3.11+)**
+**Step 1: Install Python (if you don't have it)**
+
+Check if Python is installed:
+```bash
+python3 --version
+```
+
+If not installed:
+
+*Mac (using Homebrew):*
+```bash
+# Install Homebrew first if needed
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Then install Python
+brew install python@3.12
+```
+
+*Windows (using winget):*
+```powershell
+winget install Python.Python.3.12
+```
+
+*Or download from [python.org](https://www.python.org/downloads/)*
+
+**Step 2: Install AgentKit**
 
 ```bash
 pip install git+https://github.com/hgreene624/AgentKit.git
 ```
 
-**Option 2: UV (fast Python package manager)**
-
-```bash
-# Install UV if you haven't already
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Install AgentKit
-uv tool install git+https://github.com/hgreene624/AgentKit.git
-```
-
-**Check your installation:**
+**Step 3: Verify installation**
 
 ```bash
 agentkit --version  # Should show v0.3.0
