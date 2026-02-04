@@ -30,8 +30,9 @@ If state file is missing, corrupted, or inconsistent with documents:
 
 ## Conversation Style
 
-- **Scoping questions**: Open-ended, let user describe in their own words (no numbered options)
-- **Clarifying questions**: Use numbered options for quick decisions on specifics
+- **Technical scoping first**: Understand concrete details (inputs, users, constraints) before abstract values
+- **Open-ended for scope**: Let user describe technical reality in their own words
+- **Numbered options for values/decisions**: Propose guiding principles based on what you learned
 - Have a back-and-forth dialogue, not an interrogation
 - Summarize and confirm before creating documents
 - Update workflow state after each phase completes

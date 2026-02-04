@@ -521,8 +521,9 @@ If state file is missing, corrupted, or inconsistent with documents:
 
 ## Conversation Style
 
-- **Scoping questions**: Open-ended, let user describe in their own words (no numbered options)
-- **Clarifying questions**: Use numbered options for quick decisions on specifics
+- **Technical scoping first**: Understand concrete details (inputs, users, constraints) before abstract values
+- **Open-ended for scope**: Let user describe technical reality in their own words
+- **Numbered options for values/decisions**: Propose guiding principles based on what you learned
 - Have a back-and-forth dialogue, not an interrogation
 - Summarize and confirm before creating documents
 - Update workflow state after each phase completes
@@ -559,17 +560,26 @@ Start with an open-ended prompt - no suggested answers:
 
 **Wait for user response.** Let them describe it in their own words.
 
-### Scoping Questions (OPEN-ENDED)
-Ask as open questions - user writes their own response, NO numbered options:
-- "What principles or values should guide this project?"
-- "What constraints are you working with - budget, timeline, resources?"
-- "How will you know when it's done? What does success look like?"
+### Technical Scoping (OPEN-ENDED)
+Focus on understanding concrete scope first. Ask open questions:
+- "What are the main inputs? (data sources, APIs, files, user input)"
+- "Who will use this? What's their technical level?"
+- "What constraints are you working with - timeline, budget, tech stack?"
+- "How will you know it's done? What's the minimum for a working version?"
 
-### Clarifying Questions (NUMBERED OPTIONS)
-After scoping, use numbered options for quick decisions:
+**Priority**: Clarify technical reality before discussing abstract values.
 
-> "For trade-offs, which takes priority?
-> 1. Speed  2. Quality  3. Cost  4. Other"
+### Guiding Principles (NUMBERED OPTIONS)
+After scope is clear, **propose** principles based on what you learned:
+
+> "Based on what you've described, which principle should guide decisions?
+> 1. Reliability - accuracy and uptime matter most
+> 2. Speed to market - get something working fast
+> 3. Flexibility - easy to adapt as requirements change
+> 4. Simplicity - minimal complexity, easy to maintain
+> 5. Other"
+
+Propose options that fit the project context.
 
 ### Summary & Confirmation
 Before creating the document, summarize:

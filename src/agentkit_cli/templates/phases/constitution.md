@@ -29,24 +29,27 @@ Start with an open-ended prompt - no suggested answers:
 
 **Wait for user response.** Let them describe it in their own words.
 
-### Scoping Questions (OPEN-ENDED)
-Ask these as open questions - user writes their own response, NO numbered options:
-- "What principles or values should guide this project?"
-- "What constraints are you working with - budget, timeline, resources?"
-- "How will you know when it's done? What does success look like?"
+### Technical Scoping (OPEN-ENDED)
+Focus on understanding the concrete scope first. Ask open questions:
+- "What are the main inputs? (data sources, APIs, files, user input)"
+- "Who will use this? What's their technical level?"
+- "What constraints are you working with - timeline, budget, technology stack?"
+- "How will you know it's done? What's the minimum for a working version?"
 
-Let the user describe things in their own words. Have a back-and-forth conversation.
+**Priority**: Clarify the technical reality before discussing abstract values.
+Have a back-and-forth conversation. Ask follow-ups to understand the scope deeply.
 
-### Clarifying Questions (NUMBERED OPTIONS)
-After scoping, use numbered options to quickly fill gaps:
+### Guiding Principles (NUMBERED OPTIONS)
+After the scope is clear, **propose** guiding principles based on what you learned:
 
-> "For trade-offs, which takes priority?
-> 1. Speed - get it done fast
-> 2. Quality - get it done right
-> 3. Cost - keep it cheap
-> 4. Other"
+> "Based on what you've described, which principle should guide decisions?
+> 1. Reliability - data accuracy and uptime matter most
+> 2. Speed to market - get something working fast, iterate later
+> 3. Flexibility - easy to adapt as requirements change
+> 4. Simplicity - minimal complexity, easy to maintain
+> 5. Other"
 
-Use numbered options when you need a quick decision on something specific.
+Propose options that fit the project context. Don't ask users to define values from scratch.
 
 ### Summary & Confirmation
 Before creating the document, summarize what you learned:
