@@ -38,7 +38,7 @@ winget install Python.Python.3.12
 **Step 2: Install AgentKit**
 
 ```bash
-pip install git+https://github.com/hgreene624/AgentKit.git
+python3 -m pip install git+https://github.com/hgreene624/AgentKit.git
 ```
 
 **Step 3: Verify installation**
@@ -46,6 +46,8 @@ pip install git+https://github.com/hgreene624/AgentKit.git
 ```bash
 agentkit --version  # Should show v0.3.0
 ```
+
+> **Note:** If `agentkit` command isn't found, you may need to add Python's bin directory to your PATH or use `python3 -m agentkit_cli` instead.
 
 ### Initialize Your First Project
 
