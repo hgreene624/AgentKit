@@ -6,25 +6,40 @@ Establish the project's guiding principles, constraints, and definition of done.
 ## Prerequisites
 None - this is the first phase.
 
-## Adaptive Questioning
+## Conversation Flow
 
-### Clarity Assessment
-- **Low clarity**: User gave brief/vague project description → ask 4-5 questions
-- **Medium clarity**: User provided some context → ask 2-3 questions
-- **High clarity**: User gave detailed brief → ask 1-2 confirming questions
+### Opening (REQUIRED)
+Start with an open-ended prompt - no suggested answers:
 
-### Question Bank (prioritized)
-1. **Core values** - What principles guide this project? (quality vs speed, innovation vs proven, budget-conscious vs premium)
-2. **Aesthetic/style** - Any style preferences or standards to maintain?
-3. **Constraints** - Budget, timeline, resources, or skills limitations?
-4. **Decision framework** - When trade-offs arise, what takes priority?
-5. **Definition of done** - What does success look like? How will you know it's complete?
+> "Tell me about your project. What are you trying to create?"
 
-### Presentation Rules
-- Provide multiple choice options (a, b, c, d, Other)
-- Recommend an answer with 1-sentence reasoning
-- Accept user's choice or custom input
-- Maximum 3 clarifications - make informed guesses for rest
+**Wait for user response.** Let them describe it in their own words.
+
+### Scoping Questions (OPEN-ENDED)
+Ask these as open questions - user writes their own response, NO numbered options:
+- "What principles or values should guide this project?"
+- "What constraints are you working with - budget, timeline, resources?"
+- "How will you know when it's done? What does success look like?"
+
+Let the user describe things in their own words. Have a back-and-forth conversation.
+
+### Clarifying Questions (NUMBERED OPTIONS)
+After scoping, use numbered options to quickly fill gaps:
+
+> "For trade-offs, which takes priority?
+> 1. Speed - get it done fast
+> 2. Quality - get it done right
+> 3. Cost - keep it cheap
+> 4. Other"
+
+Use numbered options when you need a quick decision on something specific.
+
+### Summary & Confirmation
+Before creating the document, summarize what you learned:
+
+> "Here's what I'm hearing: [summary]. Does this capture it?"
+
+Let them correct or add before finalizing.
 
 ## Completion Criteria
 Core principles documented covering: values, constraints, and success definition.

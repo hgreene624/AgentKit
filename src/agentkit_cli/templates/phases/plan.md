@@ -6,25 +6,41 @@ Define HOW the work will be done and WHEN. Determine approach, resources, timeli
 ## Prerequisites
 - spec.md must exist
 
-## Adaptive Questioning
+## Conversation Flow
 
-### Clarity Assessment
-- **Low clarity**: No approach mentioned → ask 4-5 questions
-- **Medium clarity**: General approach known, details needed → ask 2-3 questions
-- **High clarity**: Method already decided → ask 1-2 confirming questions
+### Opening (REQUIRED)
+After reading spec.md, start with an open-ended prompt:
 
-### Question Bank (prioritized)
-1. **Approach/Method** - How will you create the deliverables? What technique or process?
-2. **Resources needed** - What tools, materials, skills, or help do you need?
-3. **Dependencies** - What must happen first? What are you waiting on?
-4. **Timeline/Milestones** - Key checkpoints? When should each outcome be ready?
-5. **Risks & Contingencies** - What could go wrong? What's the backup plan?
+> "How do you want to approach this? Do you have a method in mind, or would you like me to suggest an approach?"
 
-### Presentation Rules
-- Reference outcomes from spec.md when planning
-- Suggest approaches based on project domain
-- Consider constitution constraints when recommending
-- Maximum 3 clarifications - infer reasonable defaults
+**Wait for user response.** They may have a specific method or want guidance.
+
+### Scoping Questions (OPEN-ENDED)
+Ask these as open questions - user writes their own response, NO numbered options:
+- "Walk me through how you'd approach this - what's the method?"
+- "What tools, resources, or help do you need?"
+- "What has to happen first? Any dependencies or blockers?"
+- "What's your timeline - any deadlines or milestones?"
+
+Let the user describe their approach. Propose alternatives if they're stuck.
+
+### Clarifying Questions (NUMBERED OPTIONS)
+After scoping, use numbered options to quickly fill gaps:
+
+> "For the first milestone, which outcome should it cover?
+> 1. O1 only
+> 2. O1 and O2
+> 3. All outcomes
+> 4. Other"
+
+Use numbered options for logistics decisions, not for approach discussions.
+
+### Summary & Confirmation
+Before creating the document, summarize the plan:
+
+> "Here's the approach: [method, timeline, resources]. Does this work?"
+
+Let them adjust before finalizing.
 
 ## Completion Criteria
 - Approach defined for achieving outcomes

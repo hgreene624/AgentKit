@@ -6,25 +6,40 @@ Capture WHAT will be created and WHY it matters. Define outcomes, requirements, 
 ## Prerequisites
 - constitution.md must exist
 
-## Adaptive Questioning
+## Conversation Flow
 
-### Clarity Assessment
-- **Low clarity**: Vague idea, no details → ask 4-5 questions
-- **Medium clarity**: Some definition, gaps to fill → ask 2-3 questions
-- **High clarity**: Detailed description provided → ask 1-2 confirming questions
+### Opening (REQUIRED)
+Start with an open-ended prompt - no suggested answers:
 
-### Question Bank (prioritized)
-1. **Problem/Opportunity** - What problem does this solve or opportunity does it address?
-2. **Audience** - Who benefits from this? Who is it for?
-3. **Deliverables** - What specific outputs will be created?
-4. **Scope boundaries** - What's explicitly NOT included?
-5. **Requirements** - What must be true for this to succeed?
+> "What specifically do you want to create? Describe the deliverables and outcomes you're aiming for."
 
-### Presentation Rules
-- Provide options with recommendations
-- Reference constitution values when suggesting answers
-- Group related questions (2-3 per batch based on clarity)
-- Maximum 3 clarifications per phase
+**Wait for user response.** Let them describe the scope in their own words.
+
+### Scoping Questions (OPEN-ENDED)
+Ask these as open questions - user writes their own response, NO numbered options:
+- "What problem does this solve or opportunity does it create?"
+- "Who is this for? Who benefits?"
+- "What are the specific deliverables - what will exist when you're done?"
+- "What's explicitly NOT included in this project?"
+
+Let the user describe the scope in their own words. Dig deeper with follow-ups.
+
+### Clarifying Questions (NUMBERED OPTIONS)
+After scoping, use numbered options to quickly fill gaps:
+
+> "What's the priority for these outcomes?
+> 1. O1 is must-have, O2 is nice-to-have
+> 2. Both are equally important
+> 3. Other"
+
+Use numbered options for specific decisions, not for scoping.
+
+### Summary & Confirmation
+Before creating the document, summarize the spec:
+
+> "Let me summarize what we're building: [outcomes, requirements, scope]. Anything to add or change?"
+
+Let them refine before finalizing.
 
 ## Completion Criteria
 - At least one Outcome defined with priority and validation criteria
