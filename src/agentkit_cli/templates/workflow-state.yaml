@@ -1,0 +1,20 @@
+version: "0.3.0"
+project:
+  name: ""
+  created: null
+  domain: null
+current_phase: constitution
+session:
+  last_active: null
+  docs_read: []
+phases:
+  constitution:
+    status: pending
+  specify:
+    status: pending
+  plan:
+    status: pending
+  task:
+    status: pending
+  implement:
+    status: pending

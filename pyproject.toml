@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agentkit-cli"
-version = "0.2.0"
-description = "Creative idea development toolkit for AI agents"
+version = "0.3.0"
+description = "Creative idea development toolkit for AI agents - Auto-Orchestrated Workflow"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
@@ -25,6 +25,7 @@ classifiers = [
 dependencies = [
     "requests>=2.31.0",
     "rich>=13.0.0",
+    "pyyaml>=6.0.0",
 ]
 
 [project.optional-dependencies]
@@ -45,6 +46,7 @@ Issues = "https://github.com/hgreene624/agentkit/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentkit_cli"]
+sources = ["src"]
 
 [tool.black]
 line-length = 88
