@@ -418,14 +418,48 @@ def get_or_create_state(project_path: Path) -> WorkflowState:
     return state
 
 
-def advance_phase(state: WorkflowState) -> WorkflowState:
+def validate_phase_complete(project_path: Path, phase: str) -> tuple[bool, str]:
+    """
+    Validate that a phase can be marked complete.
+
+    Checks that the required document exists and has content.
+    Returns (is_valid, message).
+    """
+    doc_name = PHASE_DOCUMENTS.get(phase)
+
+    if doc_name is None:
+        # Phase has no required document (e.g., implement)
+        return True, "No document required"
+
+    doc_path = project_path / doc_name
+
+    if not doc_path.exists():
+        return False, f"Required document {doc_name} does not exist"
+
+    # Check if document has meaningful content (more than just template)
+    content = doc_path.read_text().strip()
+    if len(content) < 100:
+        return False, f"Document {doc_name} appears to be empty or just a template"
+
+    return True, f"Document {doc_name} exists with content"
+
+
+def advance_phase(state: WorkflowState, project_path: Optional[Path] = None) -> WorkflowState:
     """
     Advance to the next phase in the workflow.
 
     Marks current phase as completed and moves to the next one.
+    If project_path is provided, validates the required document exists first.
     Returns the updated state (does not write to disk).
     """
     current_idx = PHASE_ORDER.index(state.current_phase)
+
+    # Validate document exists before advancing (if path provided)
+    if project_path:
+        is_valid, message = validate_phase_complete(project_path, state.current_phase)
+        if not is_valid:
+            # Don't advance - return state unchanged
+            return state
 
     # Mark current phase as completed
     state.phases[state.current_phase].status = "completed"

@@ -4,19 +4,22 @@ This project uses AgentKit's auto-orchestrated workflow. The agent guides you th
 
 ## Workflow Instructions
 
-1. Read `.agentkit/workflow-state.yaml` to determine current phase
-2. Load phase instructions from `.agentkit/phases/{current_phase}.md`
-3. Follow phase instructions to guide user through questions
-4. When phase completes, update state and transition to next phase
+1. **Sync state with documents** - Always verify state matches actual documents before proceeding
+2. Read `.agentkit/workflow-state.yaml` to determine current phase
+3. Load phase instructions from `.agentkit/phases/{current_phase}.md`
+4. Follow phase instructions to guide user through conversation
+5. When phase completes (document exists with content), update state and transition
 
-## State Detection Fallback
+## State Detection & Self-Healing
 
-If state file is missing or corrupted, detect phase from documents:
+If state file is missing, corrupted, or inconsistent with documents:
 - No constitution.md → constitution phase
 - No spec.md → specify phase
 - No plan.md → plan phase
 - No tasks.md → task phase
 - All exist → implement phase
+
+**Trust documents over state file.** If state claims to be ahead of documents, roll back.
 
 ## Available Commands
 
@@ -25,10 +28,10 @@ If state file is missing or corrupted, detect phase from documents:
 - `/skip` - Skip current phase (requires confirmation)
 - `/specify`, `/plan`, `/task`, `/implement` - Manual phase jump
 
-## Core Rules
+## Conversation Style
 
-- Ask questions adaptively (more if unclear, fewer if well-defined)
-- Recommend answers with brief reasoning
-- Maximum 3 clarifications per phase - make informed guesses for rest
-- Update workflow state after each interaction
-- Announce phase transitions clearly
+- **Scoping questions**: Open-ended, let user describe in their own words (no numbered options)
+- **Clarifying questions**: Use numbered options for quick decisions on specifics
+- Have a back-and-forth dialogue, not an interrogation
+- Summarize and confirm before creating documents
+- Update workflow state after each phase completes

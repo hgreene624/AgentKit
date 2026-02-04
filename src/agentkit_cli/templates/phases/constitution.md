@@ -6,6 +6,20 @@ Establish the project's guiding principles, constraints, and definition of done.
 ## Prerequisites
 None - this is the first phase.
 
+## Prior Work Detection (FIRST)
+
+Before starting the conversation, scan the project folder for existing files:
+- Data files: `*.json`, `*.csv`, `*.xlsx`, `*.parquet`
+- Analysis: `*.ipynb`, `*.py`, reports/, outputs/, results/
+- Documentation: `*.md` files (not constitution.md, spec.md, plan.md, tasks.md)
+- Other: any files that suggest prior work
+
+If found, mention them:
+> "I noticed this project folder contains existing files: [list key files]
+> Should I incorporate these into our planning, or are we starting fresh?"
+
+Record the decision. If incorporating, reference these files in later phases.
+
 ## Conversation Flow
 
 ### Opening (REQUIRED)

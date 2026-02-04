@@ -6,6 +6,16 @@ Break the plan into actionable, trackable tasks organized by outcome.
 ## Prerequisites
 - plan.md must exist
 
+## Setup (BEFORE task breakdown)
+
+### Create Project Structure
+If plan.md defines a project structure (directories, folders), offer to create them:
+
+> "The plan defines this structure: [list directories from plan]
+> Should I create these directories now?"
+
+If yes, create the directories. This ensures the project is ready for implementation.
+
 ## Process
 
 Unlike other phases, Task phase is more collaborative:

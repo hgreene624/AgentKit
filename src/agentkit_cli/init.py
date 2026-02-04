@@ -495,19 +495,22 @@ This project uses AgentKit's auto-orchestrated workflow. The agent guides you th
 
 ## Workflow Instructions
 
-1. Read `.agentkit/workflow-state.yaml` to determine current phase
-2. Load phase instructions from `.agentkit/phases/{current_phase}.md`
-3. Follow phase instructions to guide user through questions
-4. When phase completes, update state and transition to next phase
+1. **Sync state with documents** - Always verify state matches actual documents before proceeding
+2. Read `.agentkit/workflow-state.yaml` to determine current phase
+3. Load phase instructions from `.agentkit/phases/{current_phase}.md`
+4. Follow phase instructions to guide user through conversation
+5. When phase completes (document exists with content), update state and transition
 
-## State Detection Fallback
+## State Detection & Self-Healing
 
-If state file is missing or corrupted, detect phase from documents:
+If state file is missing, corrupted, or inconsistent with documents:
 - No constitution.md → constitution phase
 - No spec.md → specify phase
 - No plan.md → plan phase
 - No tasks.md → task phase
 - All exist → implement phase
+
+**Trust documents over state file.** If state claims to be ahead of documents, roll back.
 
 ## Available Commands
 
@@ -516,13 +519,13 @@ If state file is missing or corrupted, detect phase from documents:
 - `/skip` - Skip current phase (requires confirmation)
 - `/specify`, `/plan`, `/task`, `/implement` - Manual phase jump
 
-## Core Rules
+## Conversation Style
 
-- Ask questions adaptively (more if unclear, fewer if well-defined)
-- Recommend answers with brief reasoning
-- Maximum 3 clarifications per phase - make informed guesses for rest
-- Update workflow state after each interaction
-- Announce phase transitions clearly
+- **Scoping questions**: Open-ended, let user describe in their own words (no numbered options)
+- **Clarifying questions**: Use numbered options for quick decisions on specifics
+- Have a back-and-forth dialogue, not an interrogation
+- Summarize and confirm before creating documents
+- Update workflow state after each phase completes
 '''
 
 
@@ -536,38 +539,49 @@ Establish the project's guiding principles, constraints, and definition of done.
 ## Prerequisites
 None - this is the first phase.
 
-## Adaptive Questioning
+## Prior Work Detection (FIRST)
 
-### Clarity Assessment
-- **Low clarity**: User gave brief/vague project description → ask 4-5 questions
-- **Medium clarity**: User provided some context → ask 2-3 questions
-- **High clarity**: User gave detailed brief → ask 1-2 confirming questions
+Scan the project folder for existing files:
+- Data files: `*.json`, `*.csv`, `*.xlsx`
+- Analysis: `*.ipynb`, reports/, outputs/
+- Documentation: `*.md` files (not AgentKit docs)
 
-### Question Bank (prioritized)
-1. **Core values** - What principles guide this project? (quality vs speed, innovation vs proven, budget-conscious vs premium)
-2. **Aesthetic/style** - Any style preferences or standards to maintain?
-3. **Constraints** - Budget, timeline, resources, or skills limitations?
-4. **Decision framework** - When trade-offs arise, what takes priority?
-5. **Definition of done** - What does success look like? How will you know it's complete?
+If found, mention them:
+> "I noticed existing files in this project: [list key files]
+> Should I incorporate these into our planning, or are we starting fresh?"
 
-### Presentation Rules
-- Provide multiple choice options (a, b, c, d, Other)
-- Recommend an answer with 1-sentence reasoning
-- Accept user's choice or custom input
-- Maximum 3 clarifications - make informed guesses for rest
+## Conversation Flow
+
+### Opening (REQUIRED)
+Start with an open-ended prompt - no suggested answers:
+
+> "Tell me about your project. What are you trying to create?"
+
+**Wait for user response.** Let them describe it in their own words.
+
+### Scoping Questions (OPEN-ENDED)
+Ask as open questions - user writes their own response, NO numbered options:
+- "What principles or values should guide this project?"
+- "What constraints are you working with - budget, timeline, resources?"
+- "How will you know when it's done? What does success look like?"
+
+### Clarifying Questions (NUMBERED OPTIONS)
+After scoping, use numbered options for quick decisions:
+
+> "For trade-offs, which takes priority?
+> 1. Speed  2. Quality  3. Cost  4. Other"
+
+### Summary & Confirmation
+Before creating the document, summarize:
+> "Here's what I'm hearing: [summary]. Does this capture it?"
 
 ## Completion Criteria
 Core principles documented covering: values, constraints, and success definition.
-
-## Output Document
-
-Create `constitution.md` in project root with YAML frontmatter containing project name, values, constraints, and success criteria.
 
 ## Transition
 1. Save constitution.md
 2. Update workflow-state.yaml: constitution=completed, current_phase=specify
 3. Announce: "✓ Constitution complete! Moving to Specify phase..."
-4. Begin specify phase questions
 '''
 
 
@@ -581,32 +595,38 @@ Capture WHAT will be created and WHY it matters. Define outcomes, requirements, 
 ## Prerequisites
 - constitution.md must exist
 
-## Adaptive Questioning
+## Conversation Flow
 
-### Clarity Assessment
-- **Low clarity**: Vague idea, no details → ask 4-5 questions
-- **Medium clarity**: Some definition, gaps to fill → ask 2-3 questions
-- **High clarity**: Detailed description provided → ask 1-2 confirming questions
+### Opening (REQUIRED)
+Start with an open-ended prompt - no suggested answers:
 
-### Question Bank (prioritized)
-1. **Problem/Opportunity** - What problem does this solve or opportunity does it address?
-2. **Audience** - Who benefits from this? Who is it for?
-3. **Deliverables** - What specific outputs will be created?
-4. **Scope boundaries** - What's explicitly NOT included?
-5. **Requirements** - What must be true for this to succeed?
+> "What specifically do you want to create? Describe the deliverables and outcomes you're aiming for."
 
-### Presentation Rules
-- Provide options with recommendations
-- Reference constitution values when suggesting answers
-- Maximum 3 clarifications per phase
+**Wait for user response.** Let them describe the scope in their own words.
+
+### Scoping Questions (OPEN-ENDED)
+Ask as open questions - user writes their own response, NO numbered options:
+- "What problem does this solve or opportunity does it create?"
+- "Who is this for? Who benefits?"
+- "What are the specific deliverables - what will exist when you're done?"
+- "What's explicitly NOT included in this project?"
+
+### Clarifying Questions (NUMBERED OPTIONS)
+After scoping, use numbered options for quick decisions:
+
+> "What's the priority for these outcomes?
+> 1. O1 is must-have, O2 is nice-to-have
+> 2. Both are equally important
+> 3. Other"
+
+### Summary & Confirmation
+Before creating the document, summarize:
+> "Let me summarize what we're building: [outcomes, requirements, scope]. Anything to add?"
 
 ## Completion Criteria
 - At least one Outcome defined with priority and validation criteria
 - Key requirements documented
 - Scope boundaries clear
-
-## Output Document
-Create `spec.md` in project root with YAML frontmatter containing outcomes (O1, O2...), requirements (R-001...), scope, and constraints.
 
 ## Transition
 1. Save spec.md
@@ -625,24 +645,41 @@ Define HOW the work will be done and WHEN. Determine approach, resources, timeli
 ## Prerequisites
 - spec.md must exist
 
-## Adaptive Questioning
+## Conversation Flow
 
-### Clarity Assessment
-- **Low clarity**: No approach mentioned → ask 4-5 questions
-- **Medium clarity**: General approach known, details needed → ask 2-3 questions
-- **High clarity**: Method already decided → ask 1-2 confirming questions
+### Opening (REQUIRED)
+Start with an open-ended prompt referencing the spec:
 
-### Question Bank (prioritized)
-1. **Approach/Method** - How will you create the deliverables?
-2. **Resources needed** - What tools, materials, skills, or help do you need?
-3. **Dependencies** - What must happen first? What are you waiting on?
-4. **Timeline/Milestones** - Key checkpoints? When should each outcome be ready?
-5. **Risks & Contingencies** - What could go wrong? What's the backup plan?
+> "Looking at your outcomes in spec.md, how are you thinking about approaching this? What's your general plan?"
 
-### Presentation Rules
-- Reference outcomes from spec.md when planning
-- Consider constitution constraints when recommending
-- Maximum 3 clarifications
+**Wait for user response.** Let them describe their approach in their own words.
+
+### Scoping Questions (OPEN-ENDED)
+Ask these as open questions - user writes their own response, NO numbered options:
+- "What resources, tools, or skills will you need to complete this?"
+- "Are there any dependencies or things that need to happen first?"
+- "What milestones or checkpoints would help you track progress?"
+- "What could go wrong, and how would you handle it?"
+
+Let the user describe things in their own words. Have a back-and-forth conversation.
+
+### Clarifying Questions (NUMBERED OPTIONS)
+After scoping, use numbered options to quickly fill gaps:
+
+> "For timeline, what pace works best?
+> 1. Sprint - intensive work over days
+> 2. Steady - regular progress over weeks
+> 3. Flexible - no fixed timeline
+> 4. Other"
+
+Use numbered options when you need a quick decision on something specific.
+
+### Summary & Confirmation
+Before creating the document, summarize what you learned:
+
+> "Here's the plan I'm capturing: [summary]. Does this look right?"
+
+Let them correct or add before finalizing.
 
 ## Completion Criteria
 - Approach defined for achieving outcomes
@@ -668,6 +705,16 @@ Break the plan into actionable, trackable tasks organized by outcome.
 
 ## Prerequisites
 - plan.md must exist
+
+## Setup (BEFORE task breakdown)
+
+### Create Project Structure
+If plan.md defines a project structure (directories, folders), offer to create them:
+
+> "The plan defines this structure: [list directories from plan]
+> Should I create these directories now?"
+
+If yes, create the directories. This ensures the project is ready for implementation.
 
 ## Process
 1. Agent proposes task breakdown based on plan and outcomes
@@ -983,48 +1030,48 @@ This specification answers: What are we building and why? Keep it free of implem
   - Tone/Style: [if applicable]
   - Operational limits: [hours, seasonality, capacity]
 
-## User Stories & Testing (mandatory)
+## Outcomes & Validation (mandatory)
 
-### User Story 1 - [Brief Title] (Priority: P1)
+### Outcome 1 - [Brief Title] (Priority: P1)
 
-[Describe this user journey in plain language]
+[Describe what will be achieved and who benefits]
 
 **Why this priority**: [Value/impact]
 
-**Independent Test**: [How it can be tested on its own]
+**How to validate**: [How to verify this outcome independently]
 
-**Acceptance Scenarios**:
+**Success Scenarios**:
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
-2. **Given** [initial state], **When** [action], **Then** [expected outcome]
+1. **Given** [initial state], **When** [action], **Then** [expected result]
+2. **Given** [initial state], **When** [action], **Then** [expected result]
 
 ---
 
-### User Story 2 - [Brief Title] (Priority: P2)
+### Outcome 2 - [Brief Title] (Priority: P2)
 
-[Describe this user journey in plain language]
+[Describe what will be achieved and who benefits]
 
 **Why this priority**: [Value/impact]
 
-**Independent Test**: [How it can be tested on its own]
+**How to validate**: [How to verify this outcome independently]
 
-**Acceptance Scenarios**:
+**Success Scenarios**:
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+1. **Given** [initial state], **When** [action], **Then** [expected result]
 
 ---
 
-### User Story 3 - [Brief Title] (Priority: P3)
+### Outcome 3 - [Brief Title] (Priority: P3)
 
-[Describe this user journey in plain language]
+[Describe what will be achieved and who benefits]
 
 **Why this priority**: [Value/impact]
 
-**Independent Test**: [How it can be tested on its own]
+**How to validate**: [How to verify this outcome independently]
 
-**Acceptance Scenarios**:
+**Success Scenarios**:
 
-1. **Given** [initial state], **When** [action], **Then** [expected outcome]
+1. **Given** [initial state], **When** [action], **Then** [expected result]
 
 ### Edge Cases
 
@@ -2602,28 +2649,38 @@ Begin or continue the auto-orchestrated AgentKit workflow.
    - If missing, detect phase from existing documents
    - Sync state to documents if inconsistent (self-healing)
 
-2. **Display progress** (if resuming)
+2. **Context discovery** (first run only)
+   - Scan project folder for existing files:
+     - Data files: `*.json`, `*.csv`, `*.xlsx`
+     - Prior analysis: `*.ipynb`, reports/, outputs/
+     - Documentation: `*.md` files not part of AgentKit
+   - If found, ask user:
+     > "I found existing files in this project: [list files]
+     > Should I incorporate them into our planning, or start fresh?"
+   - Record decision in workflow-state.yaml
+
+3. **Display progress** (if resuming)
    ```
    Welcome back! You're in the [PHASE] phase.
    Progress: [X/Y] phases complete
    ```
 
-3. **Load phase instructions**
+4. **Load phase instructions**
    - Read `.agentkit/phases/{current_phase}.md`
    - Follow the phase-specific guidance
 
-4. **Begin/continue phase work**
-   - If phase is pending: start with first questions
-   - If phase is in_progress: continue from last_batch
+5. **Begin/continue phase work**
+   - If phase is pending: start with opening prompt (open-ended)
+   - If phase is in_progress: continue conversation
    - If phase is completed: advance to next phase
 
-5. **Update state after each interaction**
+6. **Update state after each interaction**
    - Save progress to workflow-state.yaml
    - Track questions answered, docs read
 
 ## Notes
 - This command orchestrates the full workflow automatically
-- User just answers questions; agent handles phase transitions
+- User describes things in their own words; agent asks follow-up questions
 - State is saved frequently to enable session resumption
 """
 
