@@ -11,38 +11,17 @@ Transform fuzzy ideas into concrete realities through structured workflows with 
 ### Installation
 
 **Mac:**
-
 ```bash
-# Install Homebrew (if you don't have it)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install pipx (manages Python CLI tools)
-brew install pipx
-pipx ensurepath
-
-# Install AgentKit
-pipx install git+https://github.com/hgreene624/AgentKit.git
+brew install pipx && pipx install git+https://github.com/hgreene624/AgentKit.git
 ```
 
 **Windows:**
-
 ```powershell
-# Install Python (if you don't have it)
 winget install Python.Python.3.12
-
-# Install pipx
-python -m pip install --user pipx
-python -m pipx ensurepath
-
-# Restart your terminal, then:
-pipx install git+https://github.com/hgreene624/AgentKit.git
+pip install pipx && pipx install git+https://github.com/hgreene624/AgentKit.git
 ```
 
-**Verify installation:**
-
-```bash
-agentkit --version  # Should show v0.3.0
-```
+Then run `agentkit --version` to verify.
 
 ### Initialize Your First Project
 
