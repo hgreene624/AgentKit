@@ -10,20 +10,26 @@ Transform fuzzy ideas into concrete realities through structured workflows with 
 
 ### Installation
 
-**Recommended: Use UV (fast and reliable)**
+**Option 1: pip (requires Python 3.11+)**
+
+```bash
+pip install git+https://github.com/hgreene624/AgentKit.git
+```
+
+**Option 2: UV (fast Python package manager)**
 
 ```bash
 # Install UV if you haven't already
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install AgentKit from GitHub
-uv tool install git+https://github.com/hgreene624/agentkit.git
+# Install AgentKit
+uv tool install git+https://github.com/hgreene624/AgentKit.git
 ```
 
-**Alternative: Use pip**
+**Check your installation:**
 
 ```bash
-pip install git+https://github.com/hgreene624/agentkit.git
+agentkit --version  # Should show v0.3.0
 ```
 
 ### Initialize Your First Project
@@ -37,7 +43,7 @@ cd my-project-folder
 agentkit init . --ai claude
 ```
 
-### Start Creating
+### Start Creating (v0.3.0 Auto-Orchestrated)
 
 ```bash
 cd my-idea
@@ -45,12 +51,23 @@ cd my-idea
 # Start your AI agent
 claude  # or code/cursor/gemini
 
-# Use the workflow commands
+# Let the agent guide you through the workflow automatically
+/start  # or just say "start a project about..."
+
+# The agent will guide you through:
+# constitution → specify → plan → task → implement
+```
+
+**Manual commands still work:**
+
+```bash
 /constitution    # Set your creative principles
 /specify         # Capture your idea
 /plan            # Define the approach
 /task            # Break down into actions
 /implement       # Execute and create
+/status          # Check current phase progress
+/skip            # Skip current phase (with confirmation)
 ```
 
 ### Create an Idea Workspace
@@ -78,14 +95,26 @@ AgentKit is a thinking and making tool that helps you:
 
 ## Workflow Commands
 
+**Auto-Orchestration (v0.3.0):**
+- `/start` or `/continue` - Begin or resume auto-orchestrated workflow
+- `/status` - Show current phase and progress
+- `/skip` - Skip current phase (with confirmation)
+
+**Manual Phase Commands:**
+- `/constitution` - Set/refine principles (align spec)
 - `/specify` - Capture your initial idea
 - `/clarify` - Sharpen through structured questioning
 - `/checklist` - Validate requirement quality
-- `/constitution` - Set/refine principles (align spec)
 - `/plan` - Define the approach
 - `/task` - Break down into actions
 - `/implement` - Execute and create
-- `agentkit upgrade` - Upgrade the CLI (pip-based; use `--use-git` for GitHub source)
+
+**CLI Commands:**
+- `agentkit init` - Initialize a new project
+- `agentkit idea` - Create an idea workspace
+- `agentkit upgrade` - Upgrade existing project to v0.3.0
+- `agentkit update` - Update the CLI (pip-based; use `--use-git` for GitHub source)
+- `agentkit check` - Check for installed AI agents
 
 ## Workflow (Mermaid)
 
