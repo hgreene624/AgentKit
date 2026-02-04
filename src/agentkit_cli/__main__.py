@@ -91,22 +91,38 @@ def main():
         help="Check for installed AI agents and prerequisites"
     )
 
-    # agentkit upgrade command
+    # agentkit upgrade command (project upgrade to v0.3.0)
     upgrade_parser = subparsers.add_parser(
         "upgrade",
-        help="Upgrade AgentKit CLI to latest (pip-based)"
+        help="Upgrade existing project to v0.3.0 (auto-orchestrated workflow)"
     )
     upgrade_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force upgrade even if already at v0.3.0"
+    )
+    upgrade_parser.add_argument(
+        "-y", "--yes",
+        action="store_true",
+        help="Skip confirmation prompt"
+    )
+
+    # agentkit update command (update CLI via pip)
+    update_parser = subparsers.add_parser(
+        "update",
+        help="Update AgentKit CLI to latest version (pip-based)"
+    )
+    update_parser.add_argument(
         "--source",
         default="agentkit-cli",
         help="Package or URL to install (default: agentkit-cli)"
     )
-    upgrade_parser.add_argument(
+    update_parser.add_argument(
         "--use-git",
         action="store_true",
         help="Use git source https://github.com/hgreene624/AgentKit.git"
     )
-    
+
     # Parse arguments
     args = parser.parse_args()
     
@@ -125,17 +141,20 @@ def main():
         from agentkit_cli.check import check_environment
         return check_environment(args)
     elif args.command == "upgrade":
+        from agentkit_cli.upgrade import upgrade_project
+        return upgrade_project(args)
+    elif args.command == "update":
         target = args.source
         if args.use_git:
             target = "git+https://github.com/hgreene624/AgentKit.git"
         cmd = [sys.executable, "-m", "pip", "install", "--upgrade", target]
         try:
-            print(f"Upgrading AgentKit via: {' '.join(cmd)}")
+            print(f"Updating AgentKit via: {' '.join(cmd)}")
             subprocess.run(cmd, check=True)
-            print("Upgrade completed.")
+            print("Update completed.")
             return 0
         except subprocess.CalledProcessError as exc:
-            print(f"Upgrade failed: {exc}")
+            print(f"Update failed: {exc}")
             return 1
     
     return 0

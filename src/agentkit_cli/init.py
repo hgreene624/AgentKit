@@ -137,35 +137,43 @@ def init_project(args) -> int:
             TextColumn("[progress.description]{task.description}"),
             console=console,
         ) as progress:
-            
+
             task = progress.add_task("Creating project structure...", total=None)
             create_project_structure(project_dir, ai_agent, script_type)
             progress.update(task, completed=True)
-            
+
             task = progress.add_task("Installing templates...", total=None)
             install_templates(project_dir, ai_agent)
             progress.update(task, completed=True)
-            
+
             task = progress.add_task("Creating helper scripts...", total=None)
             create_scripts(project_dir, script_type)
             progress.update(task, completed=True)
-            
+
             task = progress.add_task("Setting up command files...", total=None)
             setup_commands(project_dir, ai_agent)
             progress.update(task, completed=True)
-            
+
+            # v0.3.0: Auto-orchestration setup
+            task = progress.add_task("Setting up auto-orchestration (v0.3.0)...", total=None)
+            install_phase_instructions(project_dir)
+            create_workflow_state(project_dir, project_name)
+            install_minimal_agents_md(project_dir)
+            progress.update(task, completed=True)
+
         # Success message
         console.print()
         console.print(Panel.fit(
             f"[green]✓ Project initialized successfully![/green]\n\n"
             f"AI Agent: [cyan]{AGENT_CONFIG[ai_agent]['name']}[/cyan]\n"
-            f"Script Type: [cyan]{SCRIPT_CONFIG[script_type]['name']}[/cyan]\n\n"
+            f"Script Type: [cyan]{SCRIPT_CONFIG[script_type]['name']}[/cyan]\n"
+            f"Version: [cyan]0.3.0 (Auto-Orchestrated)[/cyan]\n\n"
             f"[bold]Next Steps:[/bold]\n"
             f"1. cd {project_name if not args.here else '.'}\n"
             f"2. Run your AI agent (e.g., 'claude')\n"
-            f"3. /specify (capture idea) → /clarify (optional) → /checklist\n"
-            f"4. /constitution (draft/refine principles) and sync\n"
-            f"5. /plan → /task → /implement",
+            f"3. Say 'start a project about...' or use /start\n"
+            f"4. Agent will guide you: constitution → specify → plan → task → implement\n\n"
+            f"[dim]Manual commands still work: /specify, /plan, /task, /implement[/dim]",
             title="🎉 AgentKit Ready",
             border_style="green"
         ))
@@ -248,6 +256,9 @@ def create_project_structure(project_dir: Path, ai_agent: str, script_type: str)
 
     # Templates directory
     (agentkit_dir / "templates").mkdir(parents=True, exist_ok=True)
+
+    # v0.3.0: Phases directory for modular phase instructions
+    (agentkit_dir / "phases").mkdir(parents=True, exist_ok=True)
 
     # Agent-specific command directory
     agent_config = AGENT_CONFIG[ai_agent]
@@ -412,6 +423,323 @@ def create_scripts(project_dir: Path, script_type: str):
         gh_issues_file.chmod(0o755)
 
 
+# ============================================================================
+# v0.3.0: Auto-Orchestration Support
+# ============================================================================
+
+def install_phase_instructions(project_dir: Path):
+    """Install phase instruction files for auto-orchestrated workflow (v0.3.0)"""
+
+    phases_dir = project_dir / ".agentkit" / "phases"
+    phases_dir.mkdir(parents=True, exist_ok=True)
+
+    # Phase instruction content
+    phase_files = {
+        "constitution.md": get_phase_constitution(),
+        "specify.md": get_phase_specify(),
+        "plan.md": get_phase_plan(),
+        "task.md": get_phase_task(),
+        "implement.md": get_phase_implement(),
+    }
+
+    for filename, content in phase_files.items():
+        phase_file = phases_dir / filename
+        # Don't overwrite existing phase files (user may have customized)
+        if not phase_file.exists():
+            phase_file.write_text(content)
+
+
+def create_workflow_state(project_dir: Path, project_name: str):
+    """Create initial workflow-state.yaml for auto-orchestrated workflow (v0.3.0)"""
+    from datetime import datetime
+
+    state_file = project_dir / ".agentkit" / "workflow-state.yaml"
+
+    content = f'''version: "0.3.0"
+project:
+  name: "{project_name}"
+  created: "{datetime.now().isoformat()}"
+  domain: null
+current_phase: constitution
+session:
+  last_active: null
+  docs_read: []
+phases:
+  constitution:
+    status: in_progress
+  specify:
+    status: pending
+  plan:
+    status: pending
+  task:
+    status: pending
+  implement:
+    status: pending
+'''
+    state_file.write_text(content)
+
+
+def install_minimal_agents_md(project_dir: Path):
+    """Install minimal AGENTS.md router for auto-orchestrated workflow (v0.3.0)"""
+
+    agents_md = project_dir / "AGENTS.md"
+    content = get_minimal_agents_md()
+    agents_md.write_text(content)
+
+
+def get_minimal_agents_md() -> str:
+    """Return minimal AGENTS.md router content"""
+    return '''# AgentKit Auto-Orchestrated Project
+
+This project uses AgentKit's auto-orchestrated workflow. The agent guides you through each phase automatically.
+
+## Workflow Instructions
+
+1. Read `.agentkit/workflow-state.yaml` to determine current phase
+2. Load phase instructions from `.agentkit/phases/{current_phase}.md`
+3. Follow phase instructions to guide user through questions
+4. When phase completes, update state and transition to next phase
+
+## State Detection Fallback
+
+If state file is missing or corrupted, detect phase from documents:
+- No constitution.md → constitution phase
+- No spec.md → specify phase
+- No plan.md → plan phase
+- No tasks.md → task phase
+- All exist → implement phase
+
+## Available Commands
+
+- `/start` or `/continue` - Resume auto-orchestrated workflow
+- `/status` - Show current phase and progress
+- `/skip` - Skip current phase (requires confirmation)
+- `/specify`, `/plan`, `/task`, `/implement` - Manual phase jump
+
+## Core Rules
+
+- Ask questions adaptively (more if unclear, fewer if well-defined)
+- Recommend answers with brief reasoning
+- Maximum 3 clarifications per phase - make informed guesses for rest
+- Update workflow state after each interaction
+- Announce phase transitions clearly
+'''
+
+
+def get_phase_constitution() -> str:
+    """Return constitution phase instruction content"""
+    return '''# Constitution Phase
+
+## Purpose
+Establish the project's guiding principles, constraints, and definition of done.
+
+## Prerequisites
+None - this is the first phase.
+
+## Adaptive Questioning
+
+### Clarity Assessment
+- **Low clarity**: User gave brief/vague project description → ask 4-5 questions
+- **Medium clarity**: User provided some context → ask 2-3 questions
+- **High clarity**: User gave detailed brief → ask 1-2 confirming questions
+
+### Question Bank (prioritized)
+1. **Core values** - What principles guide this project? (quality vs speed, innovation vs proven, budget-conscious vs premium)
+2. **Aesthetic/style** - Any style preferences or standards to maintain?
+3. **Constraints** - Budget, timeline, resources, or skills limitations?
+4. **Decision framework** - When trade-offs arise, what takes priority?
+5. **Definition of done** - What does success look like? How will you know it's complete?
+
+### Presentation Rules
+- Provide multiple choice options (a, b, c, d, Other)
+- Recommend an answer with 1-sentence reasoning
+- Accept user's choice or custom input
+- Maximum 3 clarifications - make informed guesses for rest
+
+## Completion Criteria
+Core principles documented covering: values, constraints, and success definition.
+
+## Output Document
+
+Create `constitution.md` in project root with YAML frontmatter containing project name, values, constraints, and success criteria.
+
+## Transition
+1. Save constitution.md
+2. Update workflow-state.yaml: constitution=completed, current_phase=specify
+3. Announce: "✓ Constitution complete! Moving to Specify phase..."
+4. Begin specify phase questions
+'''
+
+
+def get_phase_specify() -> str:
+    """Return specify phase instruction content"""
+    return '''# Specify Phase
+
+## Purpose
+Capture WHAT will be created and WHY it matters. Define outcomes, requirements, and scope.
+
+## Prerequisites
+- constitution.md must exist
+
+## Adaptive Questioning
+
+### Clarity Assessment
+- **Low clarity**: Vague idea, no details → ask 4-5 questions
+- **Medium clarity**: Some definition, gaps to fill → ask 2-3 questions
+- **High clarity**: Detailed description provided → ask 1-2 confirming questions
+
+### Question Bank (prioritized)
+1. **Problem/Opportunity** - What problem does this solve or opportunity does it address?
+2. **Audience** - Who benefits from this? Who is it for?
+3. **Deliverables** - What specific outputs will be created?
+4. **Scope boundaries** - What's explicitly NOT included?
+5. **Requirements** - What must be true for this to succeed?
+
+### Presentation Rules
+- Provide options with recommendations
+- Reference constitution values when suggesting answers
+- Maximum 3 clarifications per phase
+
+## Completion Criteria
+- At least one Outcome defined with priority and validation criteria
+- Key requirements documented
+- Scope boundaries clear
+
+## Output Document
+Create `spec.md` in project root with YAML frontmatter containing outcomes (O1, O2...), requirements (R-001...), scope, and constraints.
+
+## Transition
+1. Save spec.md
+2. Update workflow-state.yaml: specify=completed, current_phase=plan
+3. Announce: "✓ Specification complete! Moving to Plan phase..."
+'''
+
+
+def get_phase_plan() -> str:
+    """Return plan phase instruction content"""
+    return '''# Plan Phase
+
+## Purpose
+Define HOW the work will be done and WHEN. Determine approach, resources, timeline, and risks.
+
+## Prerequisites
+- spec.md must exist
+
+## Adaptive Questioning
+
+### Clarity Assessment
+- **Low clarity**: No approach mentioned → ask 4-5 questions
+- **Medium clarity**: General approach known, details needed → ask 2-3 questions
+- **High clarity**: Method already decided → ask 1-2 confirming questions
+
+### Question Bank (prioritized)
+1. **Approach/Method** - How will you create the deliverables?
+2. **Resources needed** - What tools, materials, skills, or help do you need?
+3. **Dependencies** - What must happen first? What are you waiting on?
+4. **Timeline/Milestones** - Key checkpoints? When should each outcome be ready?
+5. **Risks & Contingencies** - What could go wrong? What's the backup plan?
+
+### Presentation Rules
+- Reference outcomes from spec.md when planning
+- Consider constitution constraints when recommending
+- Maximum 3 clarifications
+
+## Completion Criteria
+- Approach defined for achieving outcomes
+- Resources and dependencies identified
+- Timeline with milestones established
+
+## Output Document
+Create `plan.md` in project root with YAML frontmatter containing approach, resources, timeline, and risks.
+
+## Transition
+1. Save plan.md
+2. Update workflow-state.yaml: plan=completed, current_phase=task
+3. Announce: "✓ Plan complete! Moving to Task phase..."
+'''
+
+
+def get_phase_task() -> str:
+    """Return task phase instruction content"""
+    return '''# Task Phase
+
+## Purpose
+Break the plan into actionable, trackable tasks organized by outcome.
+
+## Prerequisites
+- plan.md must exist
+
+## Process
+1. Agent proposes task breakdown based on plan and outcomes
+2. User reviews and adjusts
+3. Agent finalizes tasks.md
+
+### Task Format
+`- [ ] T001 [P?] [O1?] Description → artifact`
+- T001: Sequential task ID
+- [P]: Parallelizable (optional)
+- [O1]: Belongs to Outcome 1 (optional)
+- → artifact: What this task produces
+
+### Organization
+1. **Setup** - Gather resources, prepare workspace
+2. **Foundation** - Blocking work (must complete first)
+3. **Outcome phases** - One section per outcome (P1, P2, P3...)
+4. **Polish** - Final quality checks
+
+## Completion Criteria
+- Every outcome has associated tasks
+- Tasks have clear artifacts/outputs
+- User has confirmed the breakdown
+
+## Output Document
+Create `tasks.md` in project root with checkbox format organized by phase.
+
+## Transition
+1. Save tasks.md
+2. Update workflow-state.yaml: task=completed, current_phase=implement
+3. Announce: "✓ Tasks defined! Ready to implement..."
+'''
+
+
+def get_phase_implement() -> str:
+    """Return implement phase instruction content"""
+    return '''# Implement Phase
+
+## Purpose
+Execute tasks and create deliverables. Track progress through completion.
+
+## Prerequisites
+- tasks.md must exist
+
+## Process
+1. Start with Setup phase tasks
+2. Complete Foundation phase (blocks all outcomes)
+3. Work through Outcome phases
+4. Finish with Polish phase
+
+### For Each Task
+1. Announce which task you're starting
+2. Execute the work or guide user through it
+3. Mark task complete: `- [x] T001 ...`
+4. Update workflow-state.yaml with tasks_completed count
+
+### Checkpoints
+After each outcome phase, pause for validation.
+
+## Completion Criteria
+- All tasks marked complete: `- [x]`
+- All outcomes validated
+- Deliverables created in `deliverables/` folder
+
+## Completion
+When all tasks are done:
+1. Update all tasks to `[x]` in tasks.md
+2. Update workflow-state.yaml: implement=completed
+3. Announce: "✓ Project complete! All outcomes delivered."
+'''
+
+
 def create_idea_workspace(args) -> int:
     """
     Create a new idea directory with numbered slug and starter templates
@@ -523,8 +851,13 @@ def setup_commands(project_dir: Path, ai_agent: str):
         "implement": get_implement_command(),
         "checklist": get_checklist_command(),
         "tasks-to-issues": get_tasks_to_issues_command(),
+        # v0.3.0: Auto-orchestration commands
+        "start": get_start_command(),
+        "continue": get_continue_command(),
+        "status": get_status_command(),
+        "skip": get_skip_command(),
     }
-    
+
     # Write command files
     for name, content in commands.items():
         command_file = command_dir / f"{name}{ext}"
@@ -2249,4 +2582,138 @@ Outline:
 4) Do not create issues in any repo other than the detected remote.
 
 If MCP not available, STOP and report that issues were not created.
+"""
+
+
+# ============================================================================
+# v0.3.0: Auto-Orchestration Commands
+# ============================================================================
+
+def get_start_command() -> str:
+    """Return /start command content for auto-orchestrated workflow"""
+    return """# /start - Begin or Resume Workflow
+
+Begin or continue the auto-orchestrated AgentKit workflow.
+
+## Execution
+
+1. **Read current state**
+   - Load `.agentkit/workflow-state.yaml`
+   - If missing, detect phase from existing documents
+   - Sync state to documents if inconsistent (self-healing)
+
+2. **Display progress** (if resuming)
+   ```
+   Welcome back! You're in the [PHASE] phase.
+   Progress: [X/Y] phases complete
+   ```
+
+3. **Load phase instructions**
+   - Read `.agentkit/phases/{current_phase}.md`
+   - Follow the phase-specific guidance
+
+4. **Begin/continue phase work**
+   - If phase is pending: start with first questions
+   - If phase is in_progress: continue from last_batch
+   - If phase is completed: advance to next phase
+
+5. **Update state after each interaction**
+   - Save progress to workflow-state.yaml
+   - Track questions answered, docs read
+
+## Notes
+- This command orchestrates the full workflow automatically
+- User just answers questions; agent handles phase transitions
+- State is saved frequently to enable session resumption
+"""
+
+
+def get_continue_command() -> str:
+    """Return /continue command content (alias for /start)"""
+    return """# /continue - Resume Workflow
+
+Alias for `/start`. Continues the auto-orchestrated workflow from where you left off.
+
+See `/start` for full documentation.
+"""
+
+
+def get_status_command() -> str:
+    """Return /status command content"""
+    return """# /status - Show Workflow Progress
+
+Display current workflow state and progress.
+
+## Execution
+
+1. **Read state file**
+   - Load `.agentkit/workflow-state.yaml`
+   - If missing, detect from documents
+
+2. **Display summary**
+   ```
+   ## Project: [NAME]
+
+   **Current Phase**: [PHASE] ([STATUS])
+   **Progress**: [X/5] phases complete
+
+   ### Phase Status
+   - [x] Constitution - completed
+   - [>] Specify - in progress (3/8 questions)
+   - [ ] Plan - pending
+   - [ ] Task - pending
+   - [ ] Implement - pending
+
+   ### Documents Created
+   - constitution.md ✓
+   - spec.md (in progress)
+   ```
+
+3. **Show next action**
+   ```
+   **Next**: Continue with `/start` or answer the pending questions.
+   ```
+
+## Output Format
+- `[x]` = completed
+- `[>]` = in progress
+- `[ ]` = pending
+"""
+
+
+def get_skip_command() -> str:
+    """Return /skip command content"""
+    return """# /skip - Skip Current Phase
+
+Skip the current workflow phase and advance to the next one.
+
+## Execution
+
+1. **Confirm intent**
+   ```
+   ⚠️ You're about to skip the [CURRENT_PHASE] phase.
+
+   This means:
+   - [PHASE]-specific document won't be created
+   - Later phases may have less context to work with
+   - You can always come back with /[PHASE] command
+
+   Are you sure? (yes/no)
+   ```
+
+2. **If confirmed**
+   - Update workflow-state.yaml: advance current_phase to next
+   - Announce: "Skipped [PHASE]. Now in [NEXT_PHASE] phase."
+   - Begin next phase
+
+3. **If declined**
+   - Stay in current phase
+   - Continue with `/start`
+
+## Phase-Specific Warnings
+- Skipping Constitution: "No guiding principles for recommendations"
+- Skipping Specify: "Planning will lack clear outcomes"
+- Skipping Plan: "Tasks generated without approach context"
+- Skipping Task: "No structured work breakdown"
+- Cannot skip Implement (final phase)
 """
