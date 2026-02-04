@@ -10,44 +10,39 @@ Transform fuzzy ideas into concrete realities through structured workflows with 
 
 ### Installation
 
-**Step 1: Install Python (if you don't have it)**
+**Mac:**
 
-Check if Python is installed:
 ```bash
-python3 --version
-```
-
-If not installed:
-
-*Mac (using Homebrew):*
-```bash
-# Install Homebrew first if needed
+# Install Homebrew (if you don't have it)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Then install Python
-brew install python@3.12
+# Install pipx (manages Python CLI tools)
+brew install pipx
+pipx ensurepath
+
+# Install AgentKit
+pipx install git+https://github.com/hgreene624/AgentKit.git
 ```
 
-*Windows (using winget):*
+**Windows:**
+
 ```powershell
+# Install Python (if you don't have it)
 winget install Python.Python.3.12
+
+# Install pipx
+python -m pip install --user pipx
+python -m pipx ensurepath
+
+# Restart your terminal, then:
+pipx install git+https://github.com/hgreene624/AgentKit.git
 ```
 
-*Or download from [python.org](https://www.python.org/downloads/)*
-
-**Step 2: Install AgentKit**
-
-```bash
-python3 -m pip install git+https://github.com/hgreene624/AgentKit.git
-```
-
-**Step 3: Verify installation**
+**Verify installation:**
 
 ```bash
 agentkit --version  # Should show v0.3.0
 ```
-
-> **Note:** If `agentkit` command isn't found, you may need to add Python's bin directory to your PATH or use `python3 -m agentkit_cli` instead.
 
 ### Initialize Your First Project
 
